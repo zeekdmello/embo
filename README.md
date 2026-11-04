@@ -14,22 +14,81 @@ processes (CS, ACC, NDR, Retention…) and pods.
 - **Stack:** React 18 + Vite + Zustand · Express 4 + Mongoose 8 · MongoDB · TypeScript throughout
 - **Tests:** `npm test` runs 17 scheduling-engine tests
 
+> **📝 Note — the dataset is made up.** All employee names (e.g. Rohan Mehta, Priya Nair), brand names (e.g. Bloom
+> Botanics, PureSip) and pods in the sample data are **fictional**, created only to demonstrate the app; the leave
+> records and holiday calendar are sample data too. Any resemblance to real people or companies is coincidental.
+
 ---
 
 ## Contents
 
-1. [Project structure](#project-structure)
-2. [Run it locally](#run-it-locally)
-3. [Architecture](#architecture)
-4. [REST API](#rest-api)
-5. [Data model (MongoDB collections)](#data-model-mongodb-collections)
-6. [How a roster is generated](#how-a-roster-is-generated)
-7. [Validation: hard vs soft rules](#validation-hard-vs-soft-rules)
-8. [Handling changes](#handling-changes)
-9. [Sample data & scenarios](#sample-data--scenarios)
-10. [Assumptions](#assumptions)
-11. [Tell us how you think (the 8 questions)](#tell-us-how-you-think)
-12. [Known limitations](#known-limitations)
+1. [Screenshots](#screenshots)
+2. [Project structure](#project-structure)
+3. [Run it locally](#run-it-locally)
+4. [Architecture](#architecture)
+5. [REST API](#rest-api)
+6. [Data model (MongoDB collections)](#data-model-mongodb-collections)
+7. [How a roster is generated](#how-a-roster-is-generated)
+8. [Validation: hard vs soft rules](#validation-hard-vs-soft-rules)
+9. [Handling changes](#handling-changes)
+10. [Sample data & scenarios](#sample-data--scenarios)
+11. [Assumptions](#assumptions)
+12. [Tell us how you think (the 8 questions)](#tell-us-how-you-think)
+13. [Known limitations](#known-limitations)
+
+---
+
+## Screenshots
+
+All screenshots show the sample (made-up) dataset with the December 2026 roster generated.
+
+**1. Start screen** — before a month has a roster. One click generates it.
+![Start screen](screenshots/01-start.jpg)
+
+**2. Roster dashboard** — month overview: what still needs attention, % of required process-days covered, conflicts, backup cover days and weekly offs.
+![Roster dashboard](screenshots/02-dashboard.jpg)
+
+**3. Roster grid (Company view)** — every person × every day, grouped by pod with the lead first. W = working, WO = weekly off, L = leave, H = holiday, W★ = works a public holiday, green dot = covering as a backup.
+![Roster grid](screenshots/03-roster-grid.jpg)
+
+**4. Brand view (PureSip)** — coverage strip (on duty / required) per process, then owners and trained backups. Here 3 people share Customer Support, which needs 2 a day.
+![Brand view](screenshots/04-brand-view.jpg)
+
+**5. Employee view (Rohan Mehta)** — working days, offs, leave, comp-offs, what they own and back up, and a monthly calendar.
+![Employee view](screenshots/05-employee-view.jpg)
+
+**6. Who's working (click a date)** — every brand-process for the day with its requirement and who is on duty; closed processes are marked.
+![Who's working panel](screenshots/06-whos-working.jpg)
+
+**7. Cell editor (click a cell)** — change a day's status, see today's responsibilities and load, add or remove backup covers. Edits are validated instantly and locked.
+![Cell editor](screenshots/07-cell-editor.jpg)
+
+**8. Coverage** — the client's view: every brand × process × day. Green = met, red = short, grey = closed that day.
+![Coverage page](screenshots/08-coverage.jpg)
+
+**9. Conflicts — an unresolvable gap, explained** — Trailblaze's only owner and only backup are both on leave; Embo lists everyone it considered and why they can't help.
+![Conflict explained](screenshots/09-conflict-explained.jpg)
+
+**10. Conflicts — simulated fixes** — every suggested fix is tested first and shows its effect (e.g. "Hard issues 3 → 2 · resolves this") before you apply it.
+![Simulated fixes](screenshots/10-simulated-fixes.jpg)
+
+**11. Changes — absence simulator** — what happens if someone is unavailable: new issues with no action vs. after automatic repair, with a verdict per brand-process.
+![Change simulator](screenshots/11-change-simulator.jpg)
+
+**12. Publish** — publishing with open hard issues requires an explicit acknowledgement, which is recorded in the change log.
+![Publish dialog](screenshots/12-publish.jpg)
+
+**13. Setup — brands, processes & assignments** — per-process operating calendar, shift, minimum staff (with per-weekday overrides), owners and backups.
+![Setup brands](screenshots/13-setup-brands.jpg)
+
+**14. Setup — employees** — pod, preferred weekly off, offs per week, comp-offs carried in, active switch.
+![Setup employees](screenshots/14-setup-employees.jpg)
+
+**15. Setup — leaves** — add leave and approve, keep pending or reject requests.
+![Setup leaves](screenshots/15-setup-leaves.jpg)
+
+**16. How it works** — in-app explanation of generate → validate → edit & fix → handle changes.
+![How it works](screenshots/16-how-it-works.jpg)
 
 ---
 
@@ -76,6 +135,7 @@ embo/
 │  └─ src/
 │     ├─ engine/               types, calendar, context, generate, validate, suggest, impact, roster + tests
 │     └─ data/seed.ts          sample dataset (32 people, 25 brands)
+├─ screenshots/                README images
 ├─ package.json                npm workspaces + root scripts
 └─ vitest.config.ts
 ```
@@ -302,6 +362,8 @@ with their effect (“Hard issues 3 → 2 · ✓ resolves this”) before you ap
 ---
 
 ## Sample data & scenarios
+
+**All names in the sample dataset (employees, brands and pods) are made up for demonstration.**
 
 32 employees in 4 pods, 25 brands (20 single-owner = 80%, 5 with 2–3 people), 57 brand-processes. Leave is placed
 relative to the month the database was seeded for:
