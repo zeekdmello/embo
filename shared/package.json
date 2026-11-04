@@ -1,0 +1,7 @@
+{
+  "name": "@embo/shared",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Scheduling engine and sample data shared by the React client and the Express server."
+}

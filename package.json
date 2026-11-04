@@ -1,0 +1,21 @@
+{
+  "name": "embo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Embo — System management: monthly roster planning for multi-brand operations (MERN).",
+  "workspaces": ["client", "server"],
+  "engines": { "node": ">=20 <25" },
+  "scripts": {
+    "dev": "concurrently -k -n server,client -c green,yellow \"npm:dev -w server\" \"npm:dev -w client\"",
+    "build": "npm run build -w client && npm run build -w server",
+    "start": "npm start -w server",
+    "seed": "npm run seed -w server",
+    "test": "vitest run",
+    "typecheck": "npm run typecheck -w client && npm run typecheck -w server"
+  },
+  "devDependencies": {
+    "concurrently": "9.1.0",
+    "typescript": "5.6.3",
+    "vitest": "2.1.8"
+  }
+}
