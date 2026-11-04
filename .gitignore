@@ -16,3 +16,8 @@ demo-video/
 .DS_Store
 .vscode/
 .claude/
+
+# personal notes & guides (kept on this computer, not in the repo)
+DEPLOYMENT.md
+APPROACH.md
+docs/
