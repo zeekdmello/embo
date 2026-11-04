@@ -10,10 +10,9 @@ processes (CS, ACC, NDR, Retention…) and pods.
 > The scheduler builds a roster that satisfies those rules. A separate validator re-checks everything after every
 > change. When a rule can't be met, the app flags it and explains it instead of producing an invalid roster.
 
-- **Live app:** https://embo-roster-988e10ede415.herokuapp.com/ — hosted on Heroku + MongoDB Atlas (see [DEPLOYMENT.md](DEPLOYMENT.md))
+- **Live app:** https://embo-roster-988e10ede415.herokuapp.com/
 - **Stack:** React 18 + Vite + Zustand · Express 4 + Mongoose 8 · MongoDB · TypeScript throughout
 - **Tests:** `npm test` runs 17 scheduling-engine tests
-- **Full user guide (PDF):** [docs/Embo-User-Guide.pdf](docs/Embo-User-Guide.pdf)
 
 ---
 
@@ -21,17 +20,16 @@ processes (CS, ACC, NDR, Retention…) and pods.
 
 1. [Project structure](#project-structure)
 2. [Run it locally](#run-it-locally)
-3. [Deploy](#deploy)
-4. [Architecture](#architecture)
-5. [REST API](#rest-api)
-6. [Data model (MongoDB collections)](#data-model-mongodb-collections)
-7. [How a roster is generated](#how-a-roster-is-generated)
-8. [Validation: hard vs soft rules](#validation-hard-vs-soft-rules)
-9. [Handling changes](#handling-changes)
-10. [Sample data & scenarios](#sample-data--scenarios)
-11. [Assumptions](#assumptions)
-12. [Tell us how you think (the 8 questions)](#tell-us-how-you-think)
-13. [Known limitations](#known-limitations)
+3. [Architecture](#architecture)
+4. [REST API](#rest-api)
+5. [Data model (MongoDB collections)](#data-model-mongodb-collections)
+6. [How a roster is generated](#how-a-roster-is-generated)
+7. [Validation: hard vs soft rules](#validation-hard-vs-soft-rules)
+8. [Handling changes](#handling-changes)
+9. [Sample data & scenarios](#sample-data--scenarios)
+10. [Assumptions](#assumptions)
+11. [Tell us how you think (the 8 questions)](#tell-us-how-you-think)
+12. [Known limitations](#known-limitations)
 
 ---
 
@@ -78,11 +76,6 @@ embo/
 │  └─ src/
 │     ├─ engine/               types, calendar, context, generate, validate, suggest, impact, roster + tests
 │     └─ data/seed.ts          sample dataset (32 people, 25 brands)
-├─ docs/Embo-User-Guide.pdf
-├─ Procfile                    Heroku start command
-├─ render.yaml                 one-click Render deployment (alternative)
-├─ DEPLOYMENT.md               step-by-step hosting guide
-├─ APPROACH.md                 short approach note
 ├─ package.json                npm workspaces + root scripts
 └─ vitest.config.ts
 ```
@@ -91,7 +84,7 @@ embo/
 
 ## Run it locally
 
-**Requirements:** Node.js 20+, and MongoDB, either installed locally (`mongodb://127.0.0.1:27017`) or a free Atlas cluster.
+**Requirements:** Node.js 20+ and a MongoDB database (a local install at `mongodb://127.0.0.1:27017`, or any MongoDB connection string).
 
 1. Install everything (all workspaces at once):
 
@@ -99,7 +92,7 @@ embo/
 npm install
 ```
 
-2. Create the server's environment file and set `MONGODB_URI`:
+2. Create the server's environment file, then open it and set `MONGODB_URI` to your database:
 
 ```bash
 cp server/.env.example server/.env
@@ -127,24 +120,11 @@ Open http://localhost:5173. On first start with an empty database, the sample da
 | Variable | Default | Purpose |
 |---|---|---|
 | `MONGODB_URI` | `mongodb://127.0.0.1:27017/embo` | Database connection string |
-| `PORT` | `4000` | API port (hosts set this automatically) |
+| `PORT` | `4000` | API port |
 | `CLIENT_ORIGIN` | *(empty)* | Allowed CORS origin(s), only if the React app is on another domain |
 | `SEED_ON_EMPTY` | `true` | Load sample data when the database is empty |
 
 `client/.env` only needs `VITE_API_URL` when the API is on a different domain.
-
----
-
-## Deploy
-
-See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full walkthrough: GitHub → MongoDB Atlas → **Heroku** (GitHub Student
-Pack credit, always-on Basic dyno) → optional custom `.tech` domain. The short version:
-
-- `Procfile` → `web: npm start`; Heroku runs `npm install` + `npm run build` automatically
-- Config var: `MONGODB_URI`
-- One dyno hosts both the API and the React app
-
-Render also works: `render.yaml` is included for a one-click Blueprint deploy.
 
 ---
 
@@ -179,8 +159,9 @@ Key decisions:
   engine's validator checks the *business rules* (coverage, rest days, shifts…).
 - **Generator and validator are independent.** The validator never trusts the generator, so manual edits, imports and
   generated rosters are all checked the same way.
-- **One deployable service.** In production Express serves `client/dist` and the API from the same origin, so there's no
-  CORS and no second host. The server is bundled with esbuild into `server/dist/index.js`.
+- **One server in production.** After `npm run build`, `npm start` runs Express, which serves both the API and the built
+  React app (`client/dist`) from the same origin, so there's no CORS. The server is bundled with esbuild into
+  `server/dist/index.js`.
 
 ---
 
@@ -403,4 +384,3 @@ real notifications (email/Slack) for post-publish changes, and a side-by-side co
 - No login yet: anyone with the URL can edit. Add authentication before real use.
 - Last write wins if two people edit the same roster at the same moment.
 - Months are planned independently. There are two shift types.
-- On Heroku Eco or Render's free plan the app sleeps after inactivity. Use Heroku Basic (covered by the student credit) to keep it always on.
