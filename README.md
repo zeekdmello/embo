@@ -10,7 +10,7 @@ processes (CS, ACC, NDR, Retention…) and pods.
 > The scheduler builds a roster that satisfies those rules. A separate validator re-checks everything after every
 > change. When a rule can't be met, the app flags it and explains it instead of producing an invalid roster.
 
-- **Live app:** `<your URL>` — hosted on Heroku + MongoDB Atlas (see [DEPLOYMENT.md](DEPLOYMENT.md))
+- **Live app:** https://embo-roster-988e10ede415.herokuapp.com/ — hosted on Heroku + MongoDB Atlas (see [DEPLOYMENT.md](DEPLOYMENT.md))
 - **Stack:** React 18 + Vite + Zustand · Express 4 + Mongoose 8 · MongoDB · TypeScript throughout
 - **Tests:** `npm test` runs 17 scheduling-engine tests
 - **Full user guide (PDF):** [docs/Embo-User-Guide.pdf](docs/Embo-User-Guide.pdf)
